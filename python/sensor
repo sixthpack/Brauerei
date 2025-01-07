@@ -47,7 +47,7 @@ def broadcast(msg):
     #sys.stdout.write("\rsending data: ")
     sys.stdout.write("\r\033[1;36;40m" + msg)
     sys.stdout.flush()
-    #s.sendto(msg.encode('utf-8'), ('<broadcast>', port))
+    s.sendto(msg.encode('utf-8'), ('<broadcast>', port))
 
 try:
     while True :
