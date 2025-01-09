@@ -1,7 +1,8 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-import time, sys
-import socket
+import socket, curses, time, sys
+from curses import wrapper
+from threading import *
 
 # Systempfad zum den Sensor, weitere Systempfade könnten über ein Array
 # oder weiteren Variablen hier hinzugefügt werden.
@@ -32,7 +33,7 @@ def readTempLines(sensorName) :
         tempData = lines[1][temperaturStr+2:]
         tempCelsius = round(float(tempData) / 1000.0, 1)
         # Rückgabe als string
-        return str(tempCelsius)
+        return float(tempCelsius)
 
 def broadcast(msg):
     port = 22222
@@ -49,6 +50,64 @@ def broadcast(msg):
     sys.stdout.flush()
     s.sendto(msg.encode('utf-8'), ('<broadcast>', port))
 
+def updateScreen(s1_value, s2_value, stdscr):
+    curses.start_color()
+    curses.init_pair( 1, curses.COLOR_BLACK, curses.COLOR_RED)
+    curses.init_pair( 2, curses.COLOR_BLACK, curses.COLOR_WHITE)
+    x1 = int ( (curses.COLS - 5 )/2)
+    x2 = int ( (curses.COLS + 5 )/2)
+
+    stdscr.clear()
+    stdscr.refresh()
+    temp1 = s1_value.split('.')[0]
+    temp2 = s2_value.split('.')[0]
+    stdscr.addstr(4, x1, temp1+"°C", curses.A_BOLD)
+    stdscr.addstr(4, x2, temp2+"°C", curses.A_BOLD)
+        
+    v1 = int(temp1)
+    v2 = int(temp2)
+        
+    for i in range(10):
+        for j in range(4):
+            if i*10 < 100-v1:
+                stdscr.addstr(5+i, x1+j, " ", curses.color_pair(2))
+            else:
+                stdscr.addstr(5+i, x1+j, " ", curses.color_pair(1))
+
+    for i in range(10):
+        for j in range(4):
+            if i*10 < 100-v2:
+                stdscr.addstr(5+i, x2+j, " ", curses.color_pair(2))
+            else:
+                stdscr.addstr(5+i, x2+j, " ", curses.color_pair(1))
+
+    stdscr.refresh()
+
+
+def run(stdscr):
+    while True:
+        s1_value = readTempLines(sensor_1)
+        s2_value = readTempLines(sensor_2)
+        # s1_value = "21.9123"
+        # s2_value = "40.1213"
+        # broadcast(s1_value + "|" + s2_value)
+        updateScreen(s1_value, s2_value, stdscr)
+        time.sleep(10)
+
+def main(stdscr):
+    curses.curs_set(False)
+    
+    T = Thread(target=run, args=(stdscr,));
+    T.setDaemon(True)
+    T.start()
+
+    c = stdscr.getch()
+    while c != ord('q'):
+        c = stdscr.getch()
+
+wrapper(main)
+
+'''
 try:
     while True :
         # Mit einem Timestamp versehe ich meine Messung und lasse mir diese in der Console ausgeben.
@@ -69,3 +128,4 @@ finally:
     # Das Programm wird hier beendet, sodass kein Fehler in die Console geschrieben wird.
     print('Programm wird beendet.')
     sys.exit(0)
+'''
