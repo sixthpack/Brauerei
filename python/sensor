@@ -53,10 +53,10 @@ def broadcast(msg):
 def run(stdscr):
     display = Display(stdscr);
     while True:
-        #s1_value = readTempLines(sensor_1)
-        #s2_value = readTempLines(sensor_2)
-        s1_value = str(random.uniform(20.5, 85.5))
-        s2_value = str(random.uniform(20.5, 85.5))
+        s1_value = readTempLines(sensor_1)
+        s2_value = readTempLines(sensor_2)
+        # s1_value = str(random.uniform(20.5, 85.5))
+        # s2_value = str(random.uniform(20.5, 85.5))
         broadcast(s1_value + "|" + s2_value)
         display.setSensorValues(s1_value, s2_value)
         time.sleep(10)
