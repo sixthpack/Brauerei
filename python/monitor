@@ -2,62 +2,27 @@
 # -*- coding: utf-8 -*-
 # -*- coding: utf-8 -*-
 
-import socket, curses, threading, time
+import socket, curses
 from curses import wrapper
 from threading import *
+from display import Display
 
-
-def printScreen(stdscr):
-    t1 = time.perf_counter()
+def run(stdscr):
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     s.bind(("", 22222))
-    curses.start_color()
-    curses.init_pair( 1, curses.COLOR_BLACK, curses.COLOR_RED)
-    curses.init_pair( 2, curses.COLOR_BLACK, curses.COLOR_WHITE)
-
+    display = Display(stdscr)
     while True:
         data, addr = s.recvfrom(1024)
-        
         s_tmp = data.decode('utf-8').split('|')
         s_tmp1 = s_tmp[0].split('.')[0]
         s_tmp2 = s_tmp[1].split('.')[0]
+        display.setSensorValues(s_tmp1, s_tmp2)
         
-        x1 = int ( (curses.COLS - 5 )/2)
-        x2 = int ( (curses.COLS + 5 )/2)
-
-        stdscr.clear()
-        stdscr.refresh()
-        stdscr.addstr(4, x1, s_tmp1+"°C", curses.A_BOLD)
-        stdscr.addstr(4, x2, s_tmp2+"°C", curses.A_BOLD)
-        
-        v1 = int(int(s_tmp1)/10)
-        v2 = int(int(s_tmp2)/10)
-        
-        for i in range(10):
-            for j in range(4):
-                if i < 10-v1:
-                    stdscr.addstr(5+i, x1+j, " ", curses.color_pair(2))
-                else:
-                    stdscr.addstr(5+i, x1+j, " ", curses.color_pair(1))
-
-        for i in range(10):
-            for j in range(4):
-                if i < 10-v2:
-                    stdscr.addstr(5+i, x2+j, " ", curses.color_pair(2))
-                else:
-                    stdscr.addstr(5+i, x2+j, " ", curses.color_pair(1))
-
-
-        t2 = time.perf_counter()
-        t = t2 - t1
-        stdscr.refresh()
-
-
 def main(stdscr):
     curses.curs_set(False)
 
-    T = Thread(target=printScreen, args=(stdscr,));
+    T = Thread(target=run, args=(stdscr,));
     T.setDaemon(True)
     T.start()
 

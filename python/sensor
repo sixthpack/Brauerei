@@ -1,8 +1,9 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-import socket, curses, time, sys
+import socket, curses, time, sys, random
 from curses import wrapper
 from threading import *
+from display import Display
 
 # Systempfad zum den Sensor, weitere Systempfade könnten über ein Array
 # oder weiteren Variablen hier hinzugefügt werden.
@@ -37,61 +38,27 @@ def readTempLines(sensorName) :
 
 def broadcast(msg):
     port = 22222
-    interface = "wlan0"
-    broadcast = "255.255.255.255"
-
+    interface = "eth0"
+    
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-    s.setsockopt(socket.SOL_SOCKET, socket.SO_BINDTODEVICE, str("wlan0" + '\0').encode('utf-8'))
+    s.setsockopt(socket.SOL_SOCKET, socket.SO_BINDTODEVICE, str(interface + '\0').encode('utf-8'))
     #print("sending data:" + msg)
     #sys.stdout.write("\rsending data: ")
     sys.stdout.write("\r\033[1;36;40m" + msg)
     sys.stdout.flush()
     s.sendto(msg.encode('utf-8'), ('<broadcast>', port))
 
-def updateScreen(s1_value, s2_value, stdscr):
-    curses.start_color()
-    curses.init_pair( 1, curses.COLOR_BLACK, curses.COLOR_RED)
-    curses.init_pair( 2, curses.COLOR_BLACK, curses.COLOR_WHITE)
-    x1 = int ( (curses.COLS - 5 )/2)
-    x2 = int ( (curses.COLS + 5 )/2)
-
-    stdscr.clear()
-    stdscr.refresh()
-    temp1 = s1_value.split('.')[0]
-    temp2 = s2_value.split('.')[0]
-    stdscr.addstr(4, x1, temp1+"°C", curses.A_BOLD)
-    stdscr.addstr(4, x2, temp2+"°C", curses.A_BOLD)
-        
-    v1 = int(temp1)
-    v2 = int(temp2)
-        
-    for i in range(10):
-        for j in range(4):
-            if i*10 < 100-v1:
-                stdscr.addstr(5+i, x1+j, " ", curses.color_pair(2))
-            else:
-                stdscr.addstr(5+i, x1+j, " ", curses.color_pair(1))
-
-    for i in range(10):
-        for j in range(4):
-            if i*10 < 100-v2:
-                stdscr.addstr(5+i, x2+j, " ", curses.color_pair(2))
-            else:
-                stdscr.addstr(5+i, x2+j, " ", curses.color_pair(1))
-
-    stdscr.refresh()
-
-
 def run(stdscr):
+    display = Display(stdscr);
     while True:
-        s1_value = readTempLines(sensor_1)
-        s2_value = readTempLines(sensor_2)
-        # s1_value = "21.9123"
-        # s2_value = "40.1213"
-        # broadcast(s1_value + "|" + s2_value)
-        updateScreen(s1_value, s2_value, stdscr)
+        #s1_value = readTempLines(sensor_1)
+        #s2_value = readTempLines(sensor_2)
+        s1_value = str(random.uniform(20.5, 85.5))
+        s2_value = str(random.uniform(20.5, 85.5))
+        broadcast(s1_value + "|" + s2_value)
+        display.setSensorValues(s1_value, s2_value)
         time.sleep(10)
 
 def main(stdscr):
@@ -106,26 +73,3 @@ def main(stdscr):
         c = stdscr.getch()
 
 wrapper(main)
-
-'''
-try:
-    while True :
-        # Mit einem Timestamp versehe ich meine Messung und lasse mir diese in der Console ausgeben.
-        broadcast(readTempLines(sensor_1) + "|" + readTempLines(sensor_2))
-        #broadcast("38.6|55.9")
-        #broadcast("sensor_2:" + readTempLines(sensor_2))
-
-        # Nach 10 Sekunden erfolgt die nächste Messung
-        time.sleep(10)
-
-except KeyboardInterrupt:
-    # Programm wird beendet wenn CTRL+C gedrückt wird.
-    print('Temperaturmessung wird beendet')
-except Exception as e:
-    print(str(e))
-    sys.exit(1)
-finally:
-    # Das Programm wird hier beendet, sodass kein Fehler in die Console geschrieben wird.
-    print('Programm wird beendet.')
-    sys.exit(0)
-'''
