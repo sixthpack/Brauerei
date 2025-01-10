@@ -38,7 +38,7 @@ def readTempLines(sensorName) :
 
 def broadcast(msg):
     port = 22222
-    interface = "eth0"
+    interface = "wlan0"
     
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
