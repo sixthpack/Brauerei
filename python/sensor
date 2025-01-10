@@ -53,11 +53,11 @@ def broadcast(msg):
 def run(stdscr, display):
     while True:
         display.addLog("lese sensor 1")
-        #s1_value = readTempLines(sensor_1)
-        s1_value = round(random.uniform(20.5, 85.5), 1)
+        s1_value = readTempLines(sensor_1)
+        # s1_value = round(random.uniform(20.5, 85.5), 1)
         display.addLog("lese sensor 2")
-        # s2_value = readTempLines(sensor_2)
-        s2_value = round(random.uniform(20.5, 85.5), 1)
+        s2_value = readTempLines(sensor_2)
+        # s2_value = round(random.uniform(20.5, 85.5), 1)
         
         display.addLog("sende Werte")
         broadcast(str(s1_value) + "|" + str(s2_value))
