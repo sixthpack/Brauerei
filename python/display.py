@@ -21,24 +21,24 @@ class Display:
 
         self.stdscr.clear()
         self.stdscr.refresh()
-        temp1 = self.sensor1#.split('.')[0]
-        temp2 = self.sensor2#.split('.')[0]
-        self.stdscr.addstr(4, x1, temp1+"°C", curses.A_BOLD)
-        self.stdscr.addstr(4, x2, temp2+"°C", curses.A_BOLD)
+        #temp1 = self.sensor1#.split('.')[0]
+        #temp2 = self.sensor2#.split('.')[0]
+        self.stdscr.addstr(4, x1, str(self.sensor1)+"°C", curses.A_BOLD)
+        self.stdscr.addstr(4, x2, str(self.sensor2)+"°C", curses.A_BOLD)
         
-        v1 = int(temp1)
-        v2 = int(temp2)
+        #v1 = int(temp1)
+        #v2 = int(temp2)
         
         for i in range(10):
             for j in range(4):
-                if i*10 < 100-v1:
+                if i*10 < 100-self.sensor1:
                     self.stdscr.addstr(5+i, x1+j, " ", curses.color_pair(2))
                 else:
                     self.stdscr.addstr(5+i, x1+j, " ", curses.color_pair(1))
 
         for i in range(10):
             for j in range(4):
-                if i*10 < 100-v2:
+                if i*10 < 100-self.sensor2:
                     self.stdscr.addstr(5+i, x2+j, " ", curses.color_pair(2))
                 else:
                     self.stdscr.addstr(5+i, x2+j, " ", curses.color_pair(1))
