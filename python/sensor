@@ -34,7 +34,7 @@ def readTempLines(sensorName) :
         tempData = lines[1][temperaturStr+2:]
         tempCelsius = round(float(tempData) / 1000.0, 1)
         # Rückgabe als string
-        return float(tempCelsius)
+        return tempCelsius
 
 def broadcast(msg):
     port = 22222
