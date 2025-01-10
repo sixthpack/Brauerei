@@ -57,7 +57,7 @@ def run(stdscr):
         s2_value = readTempLines(sensor_2)
         # s1_value = str(random.uniform(20.5, 85.5))
         # s2_value = str(random.uniform(20.5, 85.5))
-        broadcast(s1_value + "|" + s2_value)
+        broadcast(str(s1_value) + "|" + str(s2_value))
         display.setSensorValues(s1_value, s2_value)
         time.sleep(10)
 
