@@ -21,8 +21,8 @@ class Display:
 
         self.stdscr.clear()
         self.stdscr.refresh()
-        temp1 = self.sensor1.split('.')[0]
-        temp2 = self.sensor2.split('.')[0]
+        temp1 = self.sensor1#.split('.')[0]
+        temp2 = self.sensor2#.split('.')[0]
         self.stdscr.addstr(4, x1, temp1+"°C", curses.A_BOLD)
         self.stdscr.addstr(4, x2, temp2+"°C", curses.A_BOLD)
         
