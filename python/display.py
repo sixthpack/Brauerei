@@ -46,6 +46,6 @@ class Display:
         self.stdscr.refresh()
 
     def setSensorValues(self, s1, s2):
-        self.sensor1 = s1.split('.')[0]
-        self.sensor2 = s2.split('.')[0]
+        self.sensor1 = int(s1)#s1.split('.')[0]
+        self.sensor2 = int(s2)#s2.split('.')[0]
         self.repaint();
