@@ -38,7 +38,7 @@ def readTempLines(sensorName) :
 
 def broadcast(msg):
     port = 22222
-    interface = "eth0"
+    interface = "wlan0"
     
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -50,26 +50,35 @@ def broadcast(msg):
     sys.stdout.flush()
     s.sendto(msg.encode('utf-8'), ('<broadcast>', port))
 
-def run(stdscr):
-    display = Display();
+def run(stdscr, display):
     while True:
+        display.addLog("lese sensor 1")
         #s1_value = readTempLines(sensor_1)
-        #s2_value = readTempLines(sensor_2)
         s1_value = round(random.uniform(20.5, 85.5), 1)
+        display.addLog("lese sensor 2")
+        # s2_value = readTempLines(sensor_2)
         s2_value = round(random.uniform(20.5, 85.5), 1)
+        
+        display.addLog("sende Werte")
         broadcast(str(s1_value) + "|" + str(s2_value))
+        display.addLog("aktualisiere Anzeige")
         display.setSensorValues(s1_value, s2_value)
+        display.addLog("warte 10 Skunden")
         time.sleep(10)
 
 def main(stdscr):
     curses.curs_set(False)
     
-    T = Thread(target=run, args=(stdscr,));
+    display = Display()
+
+    T = Thread(target=run, args=(stdscr, display));
     T.setDaemon(True)
     T.start()
 
-    c = stdscr.getch()
+    c = ''
     while c != ord('q'):
+        if c == ord('1'):
+            display.clearLog()
         c = stdscr.getch()
 
 wrapper(main)
